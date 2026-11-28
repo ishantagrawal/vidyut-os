@@ -32,6 +32,7 @@ async function readJson(response, fallback) {
 
 export default function DeanStaffManager({ apiUrl }) {
   const [form, setForm] = useState(EMPTY_FORM);
+  const [departments, setDepartments] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [credentials, setCredentials] = useState([]);
   const [editing, setEditing] = useState(null);
@@ -48,6 +49,17 @@ export default function DeanStaffManager({ apiUrl }) {
   useEffect(() => {
     loadAccounts().catch((loadError) => setError(extractErrorMessage(loadError)));
   }, [loadAccounts]);
+
+  useEffect(() => {
+    let active = true;
+    apiFetch(`${apiUrl}/api/academic/config`)
+      .then(async (response) => {
+        const data = await readJson(response, 'Could not load configured departments.');
+        if (active) setDepartments(data.departments || []);
+      })
+      .catch((loadError) => { if (active) setError(extractErrorMessage(loadError)); });
+    return () => { active = false; };
+  }, [apiUrl]);
 
   const groupedAccounts = useMemo(() => ACCOUNT_GROUPS.map((group) => ({
     ...group,
@@ -194,7 +206,14 @@ export default function DeanStaffManager({ apiUrl }) {
           </select></label>
           {form.role === 'Warden'
             ? <label>Assigned hostel block<input required value={form.hostel_block === 'All' ? '' : form.hostel_block} onChange={(event) => setForm({ ...form, hostel_block: event.target.value })} /></label>
-            : <label>Department / office<input required={form.role === 'Faculty'} value={form.department} onChange={(event) => setForm({ ...form, department: event.target.value })} /></label>}
+            : form.role === 'Faculty'
+              ? <label>Department (optional)
+                <select value={form.department} onChange={(event) => setForm({ ...form, department: event.target.value })}>
+                  <option value="">Any department — all classes</option>
+                  {departments.map((department) => <option key={department} value={department}>{department}</option>)}
+                </select>
+              </label>
+              : <label>Department / office<input value={form.department} onChange={(event) => setForm({ ...form, department: event.target.value })} /></label>}
           <label>Contact email<input type="email" maxLength="254" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} /></label>
           <label>Phone<input type="tel" maxLength="40" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} /></label>
           <button className="av-primary" disabled={saving}>{saving ? 'Creating…' : 'Create staff account'}</button>
@@ -221,7 +240,15 @@ export default function DeanStaffManager({ apiUrl }) {
                     <label>Full name<input required maxLength="160" value={editing.full_name} onChange={(event) => updateEditing('full_name', event.target.value)} /></label>
                     <label>Email<input type="email" maxLength="254" value={editing.email || ''} onChange={(event) => updateEditing('email', event.target.value)} /></label>
                     <label>Phone<input type="tel" maxLength="40" value={editing.phone || ''} onChange={(event) => updateEditing('phone', event.target.value)} /></label>
-                    <label>Department / office<input value={editing.department || ''} onChange={(event) => updateEditing('department', event.target.value)} /></label>
+                    {account.role === 'Faculty'
+                      ? <label>Department (optional)
+                        <select value={editing.department || ''} onChange={(event) => updateEditing('department', event.target.value)}>
+                          <option value="">Any department — all classes</option>
+                          {editing.department && !departments.includes(editing.department) && <option value={editing.department}>{editing.department} (current account)</option>}
+                          {departments.map((department) => <option key={department} value={department}>{department}</option>)}
+                        </select>
+                      </label>
+                      : <label>Department / office<input value={editing.department || ''} onChange={(event) => updateEditing('department', event.target.value)} /></label>}
                     <label>{account.role === 'Warden' ? 'Hostel block' : 'Account scope'}<input value={editing.hostel_block || ''} onChange={(event) => updateEditing('hostel_block', event.target.value)} /></label>
                     <div className="av-form-actions">
                       <button className="av-primary" disabled={saving}>{saving ? 'Saving…' : 'Save details'}</button>

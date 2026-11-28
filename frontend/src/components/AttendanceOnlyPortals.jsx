@@ -12,7 +12,7 @@ import {
 import DeanStaffManager from './DeanStaffManager';
 import StaffAccountAccess from './StaffAccountAccess';
 import { impactSuccess } from '../utils/nativeFeedback';
-import { Button, Chip, Icon, ProgressBar, StatusPill } from './ui/DesignSystem';
+import { Button, Icon, ProgressBar, StatusPill } from './ui/DesignSystem';
 import './AttendanceOnlyPortals.css';
 
 const ROOT = '/api/attendance-v2';
@@ -900,6 +900,10 @@ function classGroupKey(group) {
   return JSON.stringify([group.department, group.year, group.division]);
 }
 
+function classGroupLabel(group) {
+  return `${group.department} · Year ${group.year} · Division ${group.division}`;
+}
+
 function FacultyAttendance({ apiUrl }) {
   const [tab, setTab] = useState('session');
   const [courses, setCourses] = useState([]);
@@ -909,6 +913,7 @@ function FacultyAttendance({ apiUrl }) {
   const [courseForm, setCourseForm] = useState({ code: '', title: '' });
   const [activeCourse, setActiveCourse] = useState('');
   const [activeGroup, setActiveGroup] = useState('');
+  const [classSearch, setClassSearch] = useState('');
   const [selectedBeaconIds, setSelectedBeaconIds] = useState([]);
   const [duration, setDuration] = useState('manual');
   const [error, setError] = useState('');
@@ -1003,6 +1008,12 @@ function FacultyAttendance({ apiUrl }) {
     }), 'Attendance override recorded.');
   };
   const activeBeacons = beacons.filter((beacon) => beacon.is_active && beacon.is_provisioned);
+  const matchingClassGroups = classGroups.filter((group) => (
+    classGroupLabel(group).toLowerCase().includes(classSearch.trim().toLowerCase())
+  ));
+  const selectedClassGroup = classGroups.find((group) => classGroupKey(group) === activeGroup);
+  const selectedClassIsHidden = selectedClassGroup
+    && !matchingClassGroups.some((group) => classGroupKey(group) === activeGroup);
   return (
     <AttendanceShell title="Faculty attendance" tabs={[
       { id: 'session', label: 'Class Sessions' },
@@ -1032,31 +1043,27 @@ function FacultyAttendance({ apiUrl }) {
           <>
         <h2>Start classroom attendance</h2>
         <form className="av-form-grid" onSubmit={start}>
-          <fieldset className="av-choice-field av-class-choice">
-            <legend>Choose a class or division</legend>
-            <div className="av-chip-list">
-              {classGroups.map((group) => {
+          <label>Class or division
+            <input
+              type="search"
+              value={classSearch}
+              onChange={(event) => setClassSearch(event.target.value)}
+              placeholder="Search department, year, or division"
+              aria-label="Search classes by department, year, or division"
+            />
+            <select required value={activeGroup} onChange={(event) => setActiveGroup(event.target.value)}>
+              <option value="">Choose a class or division</option>
+              {selectedClassIsHidden && (
+                <option value={activeGroup}>Selected: {classGroupLabel(selectedClassGroup)}</option>
+              )}
+              {matchingClassGroups.map((group) => {
                 const key = classGroupKey(group);
-                return (
-                  <Chip
-                    key={key}
-                    type="button"
-                    active={activeGroup === key}
-                    aria-pressed={activeGroup === key}
-                    onClick={() => setActiveGroup(key)}
-                  >
-                    {group.department} · {group.division}
-                  </Chip>
-                );
+                return <option key={key} value={key}>{classGroupLabel(group)}</option>;
               })}
-            </div>
-            {classGroups.find((group) => classGroupKey(group) === activeGroup) && (
-              <p className="av-selection-detail">
-                Year {classGroups.find((group) => classGroupKey(group) === activeGroup).year}
-                {' · '}{classGroups.find((group) => classGroupKey(group) === activeGroup).student_count} students
-              </p>
-            )}
-          </fieldset>
+            </select>
+            {classSearch && !matchingClassGroups.length && <small className="av-subtitle">No classes match this search.</small>}
+            {selectedClassGroup && <small className="av-subtitle">{selectedClassGroup.student_count} students in the selected class</small>}
+          </label>
           <label>Subject label (optional)
             <select value={activeCourse} onChange={(event) => setActiveCourse(event.target.value)}>
               <option value="">No subject label</option>
@@ -1065,25 +1072,33 @@ function FacultyAttendance({ apiUrl }) {
           </label>
           <fieldset className="av-choice-field av-beacon-choice">
             <legend>Choose one or more classroom beacons</legend>
-            <div className="av-beacon-grid">
-              {activeBeacons.map((beacon) => (
-                <button
-                  type="button"
-                  key={beacon.id}
-                  className={`av-beacon-option${selectedBeaconIds.includes(beacon.id) ? ' is-selected' : ''}`}
-                  aria-pressed={selectedBeaconIds.includes(beacon.id)}
-                  onClick={() => setSelectedBeaconIds((current) => current.includes(beacon.id)
-                    ? current.filter((id) => id !== beacon.id)
-                    : [...current, beacon.id])}
-                >
-                  <span className="av-beacon-icon"><Icon name="map" /></span>
-                  <span className="av-beacon-copy"><strong>{beacon.name}</strong><small>Classroom beacon</small></span>
-                  <StatusPill tone={selectedBeaconIds.includes(beacon.id) ? 'success' : 'neutral'}>
-                    {selectedBeaconIds.includes(beacon.id) ? 'Selected' : 'Available'}
-                  </StatusPill>
-                </button>
-              ))}
-            </div>
+            {activeBeacons.length ? (
+              <div className="av-beacon-grid">
+                {activeBeacons.map((beacon) => (
+                  <button
+                    type="button"
+                    key={beacon.id}
+                    className={`av-beacon-option${selectedBeaconIds.includes(beacon.id) ? ' is-selected' : ''}`}
+                    aria-pressed={selectedBeaconIds.includes(beacon.id)}
+                    onClick={() => setSelectedBeaconIds((current) => current.includes(beacon.id)
+                      ? current.filter((id) => id !== beacon.id)
+                      : [...current, beacon.id])}
+                  >
+                    <span className="av-beacon-icon"><Icon name="map" /></span>
+                    <span className="av-beacon-copy"><strong>{beacon.name}</strong><small>Classroom beacon</small></span>
+                    <StatusPill tone={selectedBeaconIds.includes(beacon.id) ? 'success' : 'neutral'}>
+                      {selectedBeaconIds.includes(beacon.id) ? 'Selected' : 'Available'}
+                    </StatusPill>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="av-empty">
+                {beacons.length
+                  ? 'Classroom beacons are registered, but none are both active and provisioned. Ask a Dean or Beacon Manager to activate and provision one.'
+                  : 'No classroom beacons are registered for this college. A Dean or Beacon Manager needs to add and provision one.'}
+              </p>
+            )}
           </fieldset>
           <label>Attendance window
             <select value={duration} onChange={(event) => setDuration(event.target.value)}>
@@ -1095,7 +1110,6 @@ function FacultyAttendance({ apiUrl }) {
           </Button>
         </form>
         {!classGroups.length && <p className="av-empty">Assign department, academic year, and division to student profiles in Student Onboarding before starting attendance.</p>}
-        {!activeBeacons.length && <p className="av-empty">Register, provision, and activate a classroom beacon before starting attendance.</p>}
           </>
         )}
       </section>}

@@ -650,6 +650,8 @@ class TenantSafetyTests(unittest.TestCase):
             }
             attendance = main._attendance_v2_module
             groups = attendance.attendance_class_groups(request)
+            classroom_beacons = attendance.list_beacons(request, scope="CLASS")
+            self.assertIn("DIVISION-ROOM-BEACON", [beacon["id"] for beacon in classroom_beacons])
             selected_group = next(
                 item for item in groups
                 if (item["department"], item["year"], item["division"]) == ("Civil", "2", "A")
@@ -2090,6 +2092,67 @@ class TenantSafetyTests(unittest.TestCase):
                 )
             self.assertEqual(error.exception.status_code, 403)
         finally:
+            main.ACTIVE_COLLEGE_ID.reset(context_token)
+
+    def test_academic_options_are_deduplicated_and_tenant_scoped(self):
+        context_token = main.ACTIVE_COLLEGE_ID.set("TESTCOLLEGE")
+        try:
+            request = build_request([])
+            request.state.user = {"role": "Dean", "user_id": "DEAN"}
+            saved = main.save_academic_configuration(
+                main.AcademicConfigReq(
+                    departments=[" Civil Engineering ", "civil engineering", "Computer Engineering"],
+                    years=["1st Year", "2nd Year"],
+                    divisions=["A", "B", "a"],
+                ),
+                request,
+            )
+            self.assertEqual(saved["departments"], ["Civil Engineering", "Computer Engineering"])
+            self.assertEqual(saved["divisions"], ["A", "B"])
+
+            request.state.user = {"role": "StudentOnboarding", "user_id": "ONBOARDING"}
+            loaded = main.get_academic_configuration(request)
+            self.assertEqual(loaded["departments"], saved["departments"])
+            self.assertEqual(loaded["years"], saved["years"])
+            self.assertEqual(loaded["divisions"], saved["divisions"])
+
+            other_tenant_token = main.ACTIVE_COLLEGE_ID.set("SVNIT")
+            try:
+                request.state.user = {"role": "Faculty", "user_id": "FACULTY"}
+                other_tenant = main.get_academic_configuration(request)
+                self.assertNotIn("Civil Engineering", other_tenant["departments"])
+            finally:
+                main.ACTIVE_COLLEGE_ID.reset(other_tenant_token)
+        finally:
+            main.ACTIVE_COLLEGE_ID.reset(context_token)
+
+    def test_faculty_account_can_be_created_without_a_department(self):
+        context_token = main.ACTIVE_COLLEGE_ID.set("TESTCOLLEGE")
+        conn = main.get_conn()
+        try:
+            account = main._create_dean_staff_account(
+                conn,
+                {
+                    "user_id": "FACULTY_ANY_CLASS",
+                    "full_name": "Faculty Member",
+                    "role": "Faculty",
+                    "department": "",
+                    "hostel_block": "All",
+                    "email": "",
+                    "phone": "",
+                },
+                "DEAN",
+            )
+            conn.commit()
+            self.assertEqual(account["role"], "Faculty")
+            faculty = main.db_exec(
+                conn,
+                "SELECT department FROM users WHERE college_id = ? AND UPPER(user_id) = ?",
+                ("TESTCOLLEGE", "FACULTY_ANY_CLASS"),
+            ).fetchone()
+            self.assertEqual(faculty["department"], "")
+        finally:
+            conn.close()
             main.ACTIVE_COLLEGE_ID.reset(context_token)
 
     def test_pooled_connection_rolls_back_before_reuse(self):

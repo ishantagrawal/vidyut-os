@@ -29,6 +29,7 @@ export default function StudentOnboardingPortal({ apiUrl, user, modules = {}, co
   const [page, setPage] = useState('students');
   const [students, setStudents] = useState([]);
   const [hostels, setHostels] = useState([]);
+  const [academicConfig, setAcademicConfig] = useState({ departments: [], years: [], divisions: [] });
   const [selectedStudentId, setSelectedStudentId] = useState('');
   const [directoryFilter, setDirectoryFilter] = useState('all');
   const [resetRequests, setResetRequests] = useState([]);
@@ -82,6 +83,24 @@ export default function StudentOnboardingPortal({ apiUrl, user, modules = {}, co
         const data = await response.json().catch(() => []);
         if (!response.ok) throw new Error(extractErrorMessage(data, 'Could not load configured hostels.'));
         if (active) setHostels(data);
+      })
+      .catch((loadError) => { if (active) setError(extractErrorMessage(loadError)); });
+    return () => { active = false; };
+  }, [apiUrl]);
+
+  useEffect(() => {
+    let active = true;
+    apiFetch(`${apiUrl}/api/academic/config`)
+      .then(async (response) => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(extractErrorMessage(data, 'Could not load academic options.'));
+        if (active) {
+          setAcademicConfig({
+            departments: Array.isArray(data.departments) ? data.departments : [],
+            years: Array.isArray(data.years) ? data.years : [],
+            divisions: Array.isArray(data.divisions) ? data.divisions : []
+          });
+        }
       })
       .catch((loadError) => { if (active) setError(extractErrorMessage(loadError)); });
     return () => { active = false; };
@@ -525,9 +544,27 @@ export default function StudentOnboardingPortal({ apiUrl, user, modules = {}, co
             <form className="av-form-grid" onSubmit={createStudent}>
               <label>Roll number / username<input required value={form.roll_no} onChange={(event) => setForm({ ...form, roll_no: event.target.value })} /></label>
               <label>Student name<input required value={form.full_name} onChange={(event) => setForm({ ...form, full_name: event.target.value })} /></label>
-              <label>Department<input required value={form.department} onChange={(event) => setForm({ ...form, department: event.target.value })} /></label>
-              <label>Academic year<input value={form.year} onChange={(event) => setForm({ ...form, year: event.target.value })} /></label>
-              <label>Division / section<input maxLength="80" value={form.division} onChange={(event) => setForm({ ...form, division: event.target.value })} /></label>
+              <label>Department
+                <select required value={form.department} onChange={(event) => setForm({ ...form, department: event.target.value })}>
+                  <option value="">Choose a department</option>
+                  {form.department && !academicConfig.departments.includes(form.department) && <option value={form.department}>{form.department} (current record)</option>}
+                  {academicConfig.departments.map((department) => <option key={department} value={department}>{department}</option>)}
+                </select>
+              </label>
+              <label>Academic year
+                <select value={form.year} onChange={(event) => setForm({ ...form, year: event.target.value })}>
+                  <option value="">Choose an academic year</option>
+                  {form.year && !academicConfig.years.includes(form.year) && <option value={form.year}>{form.year} (current record)</option>}
+                  {academicConfig.years.map((year) => <option key={year} value={year}>{year}</option>)}
+                </select>
+              </label>
+              <label>Division / section
+                <select value={form.division} onChange={(event) => setForm({ ...form, division: event.target.value })}>
+                  <option value="">Choose a division</option>
+                  {form.division && !academicConfig.divisions.includes(form.division) && <option value={form.division}>{form.division} (current record)</option>}
+                  {academicConfig.divisions.map((division) => <option key={division} value={division}>{division}</option>)}
+                </select>
+              </label>
               <label>Hostel or day scholar
                 <select value={form.hostel_block} onChange={(event) => setForm({ ...form, hostel_block: event.target.value, wing: '' })}>
                   <option value="">Not assigned</option>

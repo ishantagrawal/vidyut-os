@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { apiFetch } from '../api';
 import { getCached, setCached } from '../cache';
+import AcademicSetupPanel from './AcademicSetupPanel';
 import DeanStaffManager from './DeanStaffManager';
 import { DeanAttendanceOverview } from './AttendanceOnlyPortals';
 import { GridCardSkeleton } from './SkeletonLoader';
@@ -602,6 +603,7 @@ export default function DeanPortal({ apiUrl, user, modules = {}, tenantName = 'V
       { id: 'central_depts', label: 'Central departments', icon: 'building' }
     ] : []),
     { id: 'wardens', label: 'Hostel wardens', icon: 'users' },
+    { id: 'academic_setup', label: 'Academic setup', icon: 'building' },
     { id: 'staff_accounts', label: 'Staff accounts', icon: 'lock' },
     ...(showGateSecurity ? [{ id: 'gate_security', label: 'Gate security', icon: 'shield' }] : []),
     ...(showAttendance ? [{ id: 'attendance_reports', label: 'Attendance reports', icon: 'attendance' }] : []),
@@ -759,6 +761,7 @@ export default function DeanPortal({ apiUrl, user, modules = {}, tenantName = 'V
                     {showCampusLife && <button className="ptm-icon-tile" onClick={() => setPage('clubs_list')}><span className="ptm-icon-circle"><Icon name="users" /></span><span className="ptm-icon-label">Clubs & chapters</span></button>}
                     {showCampusLife && <button className="ptm-icon-tile" onClick={() => setPage('calendar')}><span className="ptm-icon-circle"><Icon name="calendar" /></span><span className="ptm-icon-label">Event calendar</span></button>}
                     <button className="ptm-icon-tile" onClick={() => setPage('wardens')}><span className="ptm-icon-circle"><Icon name="users" /></span><span className="ptm-icon-label">Hostel wardens</span></button>
+                    <button className="ptm-icon-tile" onClick={() => setPage('academic_setup')}><span className="ptm-icon-circle"><Icon name="building" /></span><span className="ptm-icon-label">Academic setup</span></button>
                     <button className="ptm-icon-tile" onClick={() => setPage('staff_accounts')}><span className="ptm-icon-circle"><Icon name="lock" /></span><span className="ptm-icon-label">Staff accounts</span></button>
                     {showAttendance && <button className="ptm-icon-tile" onClick={() => setPage('attendance_reports')}><span className="ptm-icon-circle"><Icon name="attendance" /></span><span className="ptm-icon-label">Attendance reports</span></button>}
                     {(showGrievances || showCampusLife) && <button className="ptm-icon-tile" onClick={() => setPage('reports')}><span className="ptm-icon-circle"><Icon name="file" /></span><span className="ptm-icon-label">Audit reports</span></button>}
@@ -1576,6 +1579,16 @@ export default function DeanPortal({ apiUrl, user, modules = {}, tenantName = 'V
                   <h1 className="ptm-page-title">Staff & account management</h1>
                 </div>
                 <DeanStaffManager apiUrl={apiUrl} />
+              </div>
+            )}
+
+            {page === 'academic_setup' && (
+              <div>
+                <div className="ptm-drill-header">
+                  <button className="ptm-back-btn" onClick={() => setPage('home')}>←</button>
+                  <h1 className="ptm-page-title">Academic setup</h1>
+                </div>
+                <AcademicSetupPanel apiUrl={apiUrl} />
               </div>
             )}
 

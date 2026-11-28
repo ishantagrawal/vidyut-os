@@ -836,6 +836,14 @@ def init_db():
         )
     ''')
     db_exec(conn, '''
+        CREATE TABLE IF NOT EXISTS academic_config (
+            college_id TEXT NOT NULL PRIMARY KEY,
+            departments_json TEXT NOT NULL DEFAULT '[]',
+            years_json TEXT NOT NULL DEFAULT '[]',
+            divisions_json TEXT NOT NULL DEFAULT '[]'
+        )
+    ''')
+    db_exec(conn, '''
         CREATE TABLE IF NOT EXISTS attendance_sessions (
             college_id TEXT NOT NULL DEFAULT 'SVNIT',
             session_id TEXT NOT NULL,
@@ -1761,6 +1769,11 @@ class RazorpayCustomerIdReq(BaseModel):
 class HostelConfigReq(BaseModel):
     name: str
     wings: Optional[List[str]] = None
+
+class AcademicConfigReq(BaseModel):
+    departments: List[str] = Field(default_factory=list)
+    years: List[str] = Field(default_factory=list)
+    divisions: List[str] = Field(default_factory=list)
 
 class AttendanceConfigReq(BaseModel):
     start_time: str
@@ -2716,6 +2729,102 @@ def list_hostel_configuration(request: Request):
         conn.close()
 
 
+def _clean_academic_options(values: List[str], label: str, max_length: int) -> List[str]:
+    cleaned = []
+    seen = set()
+    if len(values) > 100:
+        raise HTTPException(status_code=400, detail=f"Configure no more than 100 {label}.")
+    for raw_value in values:
+        value = str(raw_value or "").strip()
+        if not value:
+            continue
+        if len(value) > max_length:
+            raise HTTPException(status_code=400, detail=f"Each {label[:-1]} must be at most {max_length} characters.")
+        normalized = value.casefold()
+        if normalized not in seen:
+            seen.add(normalized)
+            cleaned.append(value)
+    return cleaned
+
+
+@app.get("/api/academic/config")
+def get_academic_configuration(request: Request):
+    if request.state.user.get("role") not in {"Dean", "StudentOnboarding", "Faculty"}:
+        raise HTTPException(status_code=403, detail="Academic configuration access is required.")
+    college_id = ACTIVE_COLLEGE_ID.get()
+    conn = get_conn()
+    try:
+        row = db_exec(
+            conn,
+            "SELECT departments_json, years_json, divisions_json FROM academic_config WHERE college_id = ?",
+            (college_id,),
+        ).fetchone()
+        configured = {
+            "departments": json.loads(row["departments_json"] or "[]") if row else [],
+            "years": json.loads(row["years_json"] or "[]") if row else [],
+            "divisions": json.loads(row["divisions_json"] or "[]") if row else [],
+        }
+        if row:
+            return configured
+        legacy_rows = db_exec(
+            conn,
+            """
+            SELECT department, year, division FROM users
+            WHERE college_id = ? AND role IN ('Student', 'Faculty')
+            """,
+            (college_id,),
+        ).fetchall()
+        for field, column in (
+            ("departments", "department"),
+            ("years", "year"),
+            ("divisions", "division"),
+        ):
+            seen = {value.casefold() for value in configured[field]}
+            for legacy_row in legacy_rows:
+                value = str(legacy_row[column] or "").strip()
+                if value and value.casefold() not in seen:
+                    configured[field].append(value)
+                    seen.add(value.casefold())
+        return configured
+    finally:
+        conn.close()
+
+
+@app.post("/api/dean/academic-config")
+def save_academic_configuration(req: AcademicConfigReq, request: Request):
+    if request.state.user.get("role") != "Dean":
+        raise HTTPException(status_code=403, detail="Dean access is required.")
+    options = {
+        "departments": _clean_academic_options(req.departments, "departments", 120),
+        "years": _clean_academic_options(req.years, "academic years", 80),
+        "divisions": _clean_academic_options(req.divisions, "divisions", 80),
+    }
+    college_id = ACTIVE_COLLEGE_ID.get()
+    conn = get_conn()
+    try:
+        db_exec(
+            conn,
+            """
+            INSERT INTO academic_config (college_id, departments_json, years_json, divisions_json)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT (college_id) DO UPDATE SET
+                departments_json = EXCLUDED.departments_json,
+                years_json = EXCLUDED.years_json,
+                divisions_json = EXCLUDED.divisions_json
+            """,
+            (
+                college_id,
+                json.dumps(options["departments"]),
+                json.dumps(options["years"]),
+                json.dumps(options["divisions"]),
+            ),
+        )
+        conn.commit()
+        return {"success": True, **options}
+    finally:
+        conn.close()
+
+
 @app.post("/api/dean/hostels")
 def save_hostel_configuration(req: HostelConfigReq, request: Request):
     if request.state.user.get("role") != "Dean":
@@ -3331,8 +3440,6 @@ def update_dean_staff_account(user_id: str, req: DeanStaffEditReq, request: Requ
         ).fetchone()
         if not target or not can_manage_staff_account(caller, target):
             raise HTTPException(status_code=404, detail="Staff account not found.")
-        if target["role"] == "Faculty" and not department:
-            raise HTTPException(status_code=400, detail="Enter the Faculty member's department.")
         if target["role"] == "Warden" and (not hostel_block or hostel_block.casefold() == "all"):
             raise HTTPException(status_code=400, detail="Choose a specific hostel block for this Warden.")
         if email:
@@ -3389,8 +3496,6 @@ def _create_dean_staff_account(conn, values: dict, actor_id: str) -> dict:
     hostel_block = str(values.get("hostel_block") or "All").strip() or "All"
     if role == "Warden" and (not hostel_block or hostel_block.casefold() == "all"):
         raise HTTPException(status_code=400, detail="Choose a specific hostel block for a Warden.")
-    if role == "Faculty" and not department:
-        raise HTTPException(status_code=400, detail="Enter the Faculty member's department.")
     email = str(values.get("email") or "").strip().lower()
     if email and not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
         raise HTTPException(status_code=400, detail="Enter a valid staff email address.")

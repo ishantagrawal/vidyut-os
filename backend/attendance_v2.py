@@ -839,7 +839,10 @@ def list_beacons(request: Request, scope: Optional[str] = None):
                 return []
             query += " AND scope IN (" + ", ".join("?" for _ in enabled_scopes) + ")"
             params.extend(enabled_scopes)
-        if str(actor["role"]).upper() not in {"DEAN", "FOUNDER", "BEACONMANAGER"}:
+        actor_role = str(actor["role"]).upper()
+        if actor_role == "FACULTY":
+            query += " AND scope = 'CLASS'"
+        elif actor_role not in {"DEAN", "FOUNDER", "BEACONMANAGER"}:
             query += " AND (owner_id = ? OR scope = 'HOSTEL')"
             params.append(actor["user_id"])
         if str(actor["role"]).upper() == "WARDEN":

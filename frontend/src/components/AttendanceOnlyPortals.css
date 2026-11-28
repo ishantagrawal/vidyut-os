@@ -53,7 +53,8 @@
 .av-text-button { border: 0; background: transparent; color: var(--av-blue); font: inherit; font-size: 11px; cursor: pointer; }
 .av-form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; align-items: end; }
 .av-form-grid label,.av-inline-form label,.av-roster-forms label { display: grid; gap: 6px; color: #475569; font-size: 11px; font-weight: 650; }
-.av-form-grid input,.av-form-grid select,.av-inline-form input,.av-roster-forms input,.av-roster-forms select { width: 100%; min-width: 0; max-width: 100%; min-height: 40px; padding: 0 10px; border: 1px solid var(--av-line); border-radius: 7px; background: #fff; color: var(--av-ink); font: inherit; font-size: 12px; }
+.av-form-grid input,.av-form-grid select,.av-form-grid textarea,.av-inline-form input,.av-roster-forms input,.av-roster-forms select { width: 100%; min-width: 0; max-width: 100%; min-height: 40px; padding: 0 10px; border: 1px solid var(--av-line); border-radius: 7px; background: #fff; color: var(--av-ink); font: inherit; font-size: 12px; }
+.av-form-grid textarea { padding: 10px; resize: vertical; }
 .av-form-grid input[type="range"],.av-rssi-slider input { min-height: 22px; padding: 0; accent-color: var(--av-blue); }
 .av-roster-forms { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--av-line); }
 .av-roster-forms form { display: grid; gap: 8px; padding: 12px; border: 1px solid #f1f3f5; border-radius: 9px; }
