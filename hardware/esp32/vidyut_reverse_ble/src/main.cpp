@@ -30,6 +30,7 @@ constexpr uint32_t kScanWindow = 80;
 constexpr uint32_t kSessionPollIntervalMs = 5000;
 constexpr uint32_t kUploadIntervalMs = 3000;
 constexpr uint32_t kReconnectIntervalMs = 15000;
+constexpr uint32_t kInitialWifiWindowMs = 20000;
 constexpr size_t kMaxStudents = 150;
 constexpr int8_t kDefaultRssiThreshold = -78;
 constexpr size_t kMaxProvisioningPayload = 8192;
@@ -64,6 +65,62 @@ oyi3B43njTOQ5yOf+1CceWxG1bQVs5ZufpsMljq4Ui0/1lvh+wjChP4kqKOJ2qxq
 mRGunUHBcnWEvgJBQl9nJEiU0Zsnvgc/ubhPgXRR4Xq37Z0j4r7g1SgEEzwxA57d
 emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=
 -----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+MIIFVzCCAz+gAwIBAgINAgPlk28xsBNJiGuiFzANBgkqhkiG9w0BAQwFADBHMQsw
+CQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzEU
+MBIGA1UEAxMLR1RTIFJvb3QgUjEwHhcNMTYwNjIyMDAwMDAwWhcNMzYwNjIyMDAw
+MDAwWjBHMQswCQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZp
+Y2VzIExMQzEUMBIGA1UEAxMLR1RTIFJvb3QgUjEwggIiMA0GCSqGSIb3DQEBAQUA
+A4ICDwAwggIKAoICAQC2EQKLHuOhd5s73L+UPreVp0A8of2C+X0yBoJx9vaMf/vo
+27xqLpeXo4xL+Sv2sfnOhB2x+cWX3u+58qPpvBKJXqeqUqv4IyfLpLGcY9vXmX7w
+Cl7raKb0xlpHDU0QM+NOsROjyBhsS+z8CZDfnWQpJSMHobTSPS5g4M/SCYe7zUjw
+TcLCeoiKu7rPWRnWr4+wB7CeMfGCwcDfLqZtbBkOtdh+JhpFAz2weaSUKK0Pfybl
+qAj+lug8aJRT7oM6iCsVlgmy4HqMLnXWnOunVmSPlk9orj2XwoSPwLxAwAtcvfaH
+szVsrBhQf4TgTM2S0yDpM7xSma8ytSmzJSq0SPly4cpk9+aCEI3oncKKiPo4Zor8
+Y/kB+Xj9e1x3+naH+uzfsQ55lVe0vSbv1gHR6xYKu44LtcXFilWr06zqkUspzBmk
+MiVOKvFlRNACzqrOSbTqn3yDsEB750Orp2yjj32JgfpMpf/VjsPOS+C12LOORc92
+wO1AK/1TD7Cn1TsNsYqiA94xrcx36m97PtbfkSIS5r762DL8EGMUUXLeXdYWk70p
+aDPvOmbsB4om3xPXV2V4J95eSRQAogB/mqghtqmxlbCluQ0WEdrHbEg8QOB+DVrN
+VjzRlwW5y0vtOUucxD/SVRNuJLDWcfr0wbrM7Rv1/oFB2ACYPTrIrnqYNxgFlQID
+AQABo0IwQDAOBgNVHQ8BAf8EBAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4E
+FgQU5K8rJnEaK0gnhS9SZizv8IkTcT4wDQYJKoZIhvcNAQEMBQADggIBAJ+qQibb
+C5u+/x6Wki4+omVKapi6Ist9wTrYggoGxval3sBOh2Z5ofmmWJyq+bXmYOfg6LEe
+QkEzCzc9zolwFcq1JKjPa7XSQCGYzyI0zzvFIoTgxQ6KfF2I5DUkzps+GlQebtuy
+h6f88/qBVRRiClmpIgUxPoLW7ttXNLwzldMXG+gnoot7TiYaelpkttGsN/H9oPM4
+7HLwEXWdyzRSjeZ2axfG34arJ45JK3VmgRAhpuo+9K4l/3wV3s6MJT/KYnAK9y8J
+ZgfIPxz88NtFMN9iiMG1D53Dn0reWVlHxYciNuaCp+0KueIHoI17eko8cdLiA6Ef
+MgfdG+RCzgwARWGAtQsgWSl4vflVy2PFPEz0tv/bal8xa5meLMFrUKTX5hgUvYU/
+Z6tGn6D/Qqc6f1zLXbBwHSs09dR2CQzreExZBfMzQsNhFRAbd03OIozUhfJFfbdT
+6u9AWpQKXCBfTkBdYiJ23//OYb2MI3jSNwLgjt7RETeJ9r/tSQdirpLsQBqvFAnZ
+0E6yove+7u7Y/9waLd64NnHi/Hm3lCXRSHNboTXns5lndcEZOitHTtNCjv0xyBZm
+2tIMPNuzjsmhDYAPexZ3FL//2wmUspO8IFgV6dtxQ/PeEMMA3KgqlbbC1j+Qa3bb
+bP6MvPJwNQzcmRk13NfIRmPVNnGuV/u3gm3c
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+MIICCTCCAY6gAwIBAgINAgPlwGjvYxqccpBQUjAKBggqhkjOPQQDAzBHMQswCQYD
+VQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzEUMBIG
+A1UEAxMLR1RTIFJvb3QgUjQwHhcNMTYwNjIyMDAwMDAwWhcNMzYwNjIyMDAwMDAw
+WjBHMQswCQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2Vz
+IExMQzEUMBIGA1UEAxMLR1RTIFJvb3QgUjQwdjAQBgcqhkjOPQIBBgUrgQQAIgNi
+AATzdHOnaItgrkO4NcWBMHtLSZ37wWHO5t5GvWvVYRg1rkDdc/eJkTBa6zzuhXyi
+QHY7qca4R9gq55KRanPpsXI5nymfopjTX15YhmUPoYRlBtHci8nHc8iMai/lxKvR
+HYqjQjBAMA4GA1UdDwEB/wQEAwIBhjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQW
+BBSATNbrdP9JNqPV2Py1PsVq8JQdjDAKBggqhkjOPQQDAwNpADBmAjEA6ED/g94D
+9J+uHXqnLrmvT/aDHQ4thQEd0dlq7A/Cr8deVl5c1RxYIigL9zC2L7F8AjEA8GE8
+p/SgguMh1YQdc4acLa/KNJvxn7kjNuK8YAOdgLOaVsjh4rsUecrNIdSUtUlD
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+MIIB3DCCAYOgAwIBAgINAgPlfvU/k/2lCSGypjAKBggqhkjOPQQDAjBQMSQwIgYDVQQLExtHbG9i
+YWxTaWduIEVDQyBSb290IENBIC0gUjQxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkds
+b2JhbFNpZ24wHhcNMTIxMTEzMDAwMDAwWhcNMzgwMTE5MDMxNDA3WjBQMSQwIgYDVQQLExtHbG9i
+YWxTaWduIEVDQyBSb290IENBIC0gUjQxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkds
+b2JhbFNpZ24wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAS4xnnTj2wlDp8uORkcA6SumuU5BwkW
+ymOxuYb4ilfBV85C+nOh92VC/x7BALJucw7/xyHlGKSq2XE/qNS5zowdo0IwQDAOBgNVHQ8BAf8E
+BAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUVLB7rUW44kB/+wpu+74zyTyjhNUwCgYI
+KoZIzj0EAwIDRwAwRAIgIk90crlgr/HmnKAWBVBfw147bmF0774BxL4YSFlhgjICICadVGNA3jdg
+UM/I2O2dgq43mLyjj0xMqTQrbO/7lZsm
+-----END CERTIFICATE-----
+
 )PEM";
 
 struct DeviceConfig {
@@ -379,13 +436,13 @@ String encodeQueryValue(const String &value) {
 
 bool syncClock() {
   lastTimeSyncAt = millis();
-  configTime(0, 0, "pool.ntp.org", "time.cloudflare.com");
-  const unsigned long deadline = millis() + 15000;
-  while (time(nullptr) < 1700000000 && millis() < deadline) {
+  configTime(0, 0, "pool.ntp.org", "time.google.com");
+  const unsigned long deadline = millis() + 10000;
+  while (time(nullptr) <= 1700000000 && millis() < deadline) {
     processSerialProvisioning();
     delay(10);
   }
-  if (time(nullptr) < 1700000000) {
+  if (time(nullptr) <= 1700000000) {
     Serial.println("NTP time sync is unavailable; authenticated session polling is paused.");
     return false;
   }
@@ -449,7 +506,7 @@ AttendanceScanCallbacks scanCallbacks;
 bool refreshActiveSession() {
   if (WiFi.status() != WL_CONNECTED) return false;
   const time_t now = time(nullptr);
-  if (now < 1700000000) return false;
+  if (now <= 1700000000) return false;
 
   uint8_t key[32], digest[32];
   if (!signingKey(key)) {
@@ -465,16 +522,19 @@ bool refreshActiveSession() {
   memset(key, 0, sizeof(key));
   if (!signedOk) return false;
 
-  WiFiClientSecure tls;
-  tls.setCACert(config.rootCaPem.c_str());
+  WiFiClientSecure client;
+  client.setCACert(kDefaultRootCaPem);
   HTTPClient http;
   const String url = apiUrl("/api/attendance/esp32-active-session?beacon_id=")
       + encodeQueryValue(config.beaconId);
-  if (!http.begin(tls, url)) {
+  if (!http.begin(client, url)) {
     memset(digest, 0, sizeof(digest));
-    Serial.println("Could not initialize the active-session API request.");
+    Serial.println("Could not initialize the active-session poll.");
     return false;
   }
+  http.setConnectTimeout(15000);
+  http.setTimeout(25000);
+
   http.addHeader("Accept", "application/json");
   http.addHeader("X-Campus-Domain", config.tenantDomain);
   http.addHeader("X-Vidyut-Timestamp", timestamp);
@@ -483,8 +543,14 @@ bool refreshActiveSession() {
 
   const int status = http.GET();
   if (status != HTTP_CODE_OK) {
-    if (status < 0) Serial.printf("Active-session poll failed: %s\n", http.errorToString(status).c_str());
-    else Serial.printf("Active-session API returned HTTP %d.\n", status);
+    if (status < 0) {
+      char errBuf[256] = {};
+      const int lastError = client.lastError(errBuf, sizeof(errBuf));
+      Serial.printf("Active-session poll failed: %s; TLS/socket error (%d): %s\n",
+          http.errorToString(status).c_str(), lastError, errBuf);
+    } else {
+      Serial.printf("Active-session API returned HTTP %d.\n", status);
+    }
     http.end();
     resetSession();
     return false;
@@ -571,20 +637,28 @@ bool uploadBatch() {
   memset(key, 0, sizeof(key));
   memset(digest, 0, sizeof(digest));
 
-  WiFiClientSecure tls;
-  tls.setCACert(config.rootCaPem.c_str());
+  WiFiClientSecure client;
+  client.setCACert(kDefaultRootCaPem);
   HTTPClient http;
-  if (!http.begin(tls, apiUrl("/api/attendance/esp32-batch"))) {
+  if (!http.begin(client, apiUrl("/api/attendance/esp32-batch"))) {
     Serial.println("Could not initialize the attendance batch upload.");
     resetSession();
     return false;
   }
+  http.setConnectTimeout(15000);
+  http.setTimeout(25000);
   http.addHeader("Content-Type", "application/json");
   http.addHeader("X-Campus-Domain", config.tenantDomain);
   const int status = http.POST(body);
   const bool uploaded = status >= 200 && status < 300;
-  if (status < 0) Serial.printf("Attendance batch upload failed: %s\n", http.errorToString(status).c_str());
-  else if (!uploaded) Serial.printf("Attendance API returned HTTP %d.\n", status);
+  if (status < 0) {
+    char errBuf[256] = {};
+    const int lastError = client.lastError(errBuf, sizeof(errBuf));
+    Serial.printf("Attendance batch upload failed: %s; TLS/socket error (%d): %s\n",
+        http.errorToString(status).c_str(), lastError, errBuf);
+  } else if (!uploaded) {
+    Serial.printf("Attendance API returned HTTP %d.\n", status);
+  }
   http.end();
   if (uploaded) clearUploadedRecords(snapshot);
   else resetSession();
@@ -592,30 +666,43 @@ bool uploadBatch() {
 }
 
 void connectCampusWifi() {
-  WiFi.mode(WIFI_STA);
-  WiFi.setAutoReconnect(true);
-  WiFi.setSleep(false);
+  lastReconnectAt = millis();
   WiFi.begin(config.wifiSsid.c_str(), config.wifiPassword.c_str());
-  for (uint8_t attempt = 0; attempt < 3; ++attempt) {
-    const unsigned long deadline = millis() + 10000;
-    while (WiFi.status() != WL_CONNECTED && millis() < deadline) {
-      processSerialProvisioning();
-      delay(10);
-    }
-    if (WiFi.status() == WL_CONNECTED) {
-      Serial.println("Connected to campus Wi-Fi.");
-      processSerialProvisioning();
-      syncClock();
-      return;
-    }
-    WiFi.disconnect();
-    for (uint8_t wait = 0; wait < 50; ++wait) {
-      processSerialProvisioning();
-      delay(10);
-    }
-    WiFi.begin(config.wifiSsid.c_str(), config.wifiPassword.c_str());
+  const unsigned long deadline = millis() + kInitialWifiWindowMs;
+  while (WiFi.status() != WL_CONNECTED && millis() < deadline) {
+    processSerialProvisioning();
+    delay(10);
   }
-  Serial.println("Campus Wi-Fi is unavailable; attendance scanning remains disabled.");
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("Connected to campus Wi-Fi.");
+    processSerialProvisioning();
+    syncClock();
+  } else {
+    Serial.println("Initial Wi-Fi connection window expired; retrying every 15 seconds.");
+  }
+}
+
+void logVisibleWifiNetworks() {
+  Serial.println("[WiFi] Scanning visible 2.4 GHz networks...");
+  const int16_t networkCount = WiFi.scanNetworks();
+  if (networkCount < 0) {
+    Serial.printf("[WiFi] Network scan failed, code=%d.\n", networkCount);
+    return;
+  }
+  if (networkCount == 0) Serial.println("[WiFi] No visible networks found.");
+  for (int16_t index = 0; index < networkCount; ++index) {
+    Serial.printf("[WiFi] SSID=%s RSSI=%d dBm\n",
+        WiFi.SSID(index).c_str(), static_cast<int>(WiFi.RSSI(index)));
+  }
+  WiFi.scanDelete();
+}
+
+void retryCampusWifi() {
+  Serial.println("[WiFi] Starting a fresh connection attempt.");
+  WiFi.disconnect(false, true);
+  delay(300);
+  logVisibleWifiNetworks();
+  WiFi.begin(config.wifiSsid.c_str(), config.wifiPassword.c_str());
 }
 }  // namespace
 
@@ -633,16 +720,36 @@ void setup() {
   if (!loadConfig()) {
     Serial.println("Could not read ESP32 NVS configuration.");
   }
+  Serial.printf("[Config] api_base_url=%s\n", config.apiBaseUrl.c_str());
+  Serial.printf("[Config] tenant_domain=%s\n", config.tenantDomain.c_str());
+  Serial.printf("[Config] beacon_id=%s\n", config.beaconId.c_str());
   if (!safeConfig()) return;
   recordsMutex = xSemaphoreCreateMutex();
   if (recordsMutex == nullptr) {
     Serial.println("Could not initialize the attendance data lock.");
     return;
   }
+
+  WiFi.mode(WIFI_STA);
+  WiFi.setAutoReconnect(false);
+  WiFi.setSleep(false);
+  WiFi.setTxPower(WIFI_POWER_15dBm);
+  WiFi.onEvent([](arduino_event_id_t, arduino_event_info_t info) {
+    const uint8_t reason = info.wifi_sta_disconnected.reason;
+    Serial.printf("[WiFi] Disconnected, reason=%u", reason);
+    if (reason == 15 || reason == 202) {
+      Serial.print(" (wrong password or authentication failed)");
+    } else if (reason == 201) {
+      Serial.print(" (SSID not found; check the hotspot name and 2.4 GHz availability)");
+    }
+    Serial.println();
+  }, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+
+  connectCampusWifi();
+
   NimBLEDevice::init(config.nodeId.c_str());
   scanner = NimBLEDevice::getScan();
   scanner->setScanCallbacks(&scanCallbacks, false);
-  connectCampusWifi();
   initialized = true;
 }
 
@@ -658,17 +765,17 @@ void loop() {
     if (session.active || scanning) resetSession();
     if (now - lastReconnectAt >= kReconnectIntervalMs) {
       lastReconnectAt = now;
-      WiFi.reconnect();
+      retryCampusWifi();
     }
     delay(25);
     return;
   }
 
-  if (now - lastTimeSyncAt >= 3600000UL || time(nullptr) < 1700000000) {
+  if (now - lastTimeSyncAt >= 3600000UL || time(nullptr) <= 1700000000) {
     processSerialProvisioning();
     syncClock();
   }
-  if (time(nullptr) < 1700000000) {
+  if (time(nullptr) <= 1700000000) {
     resetSession();
     delay(25);
     return;
